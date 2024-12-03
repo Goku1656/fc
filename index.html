@@ -12,8 +12,9 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background: linear-gradient(to bottom, #a50db9, #9506e7);
-      color: white;
+      background: url(tia.png) no-repeat center center;
+      background-size: contain; /* Ajustar la imagen para que sea visible completamente */
+      color: rgb(212, 15, 230);
       overflow: hidden;
       font-family: Arial, sans-serif;
     }
@@ -25,13 +26,16 @@
     h1 {
       z-index: 2;
       font-size: 3rem;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+      text-shadow: 0 0 10px rgba(225, 9, 233, 0.7);
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <h1>¡Feliz Cumpleaños Madre!</h1>
-  <h1>¡Que la pases bien en tu dia!</h1>
+  <div>
+    <h1>¡Feliz Cumpleaños Madre!</h1>
+    <h1>¡Que la pases bien en tu día!</h1>
+  </div>
   <canvas id="fireworks"></canvas>
 
   <script>
