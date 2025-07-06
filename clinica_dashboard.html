@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediFlow - Sistema de Gestión Clínica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px 0;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+            color: white;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: #666;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            opacity: 0.7;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .notification-btn {
+            position: relative;
+            padding: 10px;
+            background: linear-gradient(45deg, #FF6B6B, #ee5a52);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .notification-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: rotate(45deg);
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .stat-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        /* Forms */
+        .form-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        /* Tables */
+        .table-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .table th, .table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .table th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+        }
+
+        .table tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 250px;
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 1000;
+                height: 100vh;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                padding: 15px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .tab.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">M</div>
+                <div class="logo-text">MediFlow</div>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" data-section="dashboard">
+                            <div class="nav-icon">📊</div>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="patients">
+                            <div class="nav-icon">👥</div>
+                            Pacientes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="appointments">
+                            <div class="nav-icon">📅</div>
+                            Citas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="specialists">
+                            <div class="nav-icon">👨‍⚕️</div>
+                            Especialistas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="notifications">
+                            <div class="nav-icon">📱</div>
+                            Notificaciones
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="users">
+                            <div class="nav-icon">⚙️</div>
+                            Usuarios
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <h1 class="header-title">Panel de Control</h1>
+                <div class="header-actions">
+                    <button class="notification-btn">
+                        📱
+                        <span class="notification-badge">5</span>
+                    </button>
+                    <div class="user-profile">
+                        <div class="user-avatar">DR</div>
+                        <div>
+                            <div style="font-weight: 600;">Dr. Rodríguez</div>
+                            <div style="font-size: 12px; opacity: 0.7;">Administrador</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="section">
+                <div class="dashboard-grid">
+                    <div class="card stat-card">
+                        <div class="stat-number">247</div>
+                        <div class="stat-label">Pacientes Activos</div>
+                        <div class="stat-icon">👥</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-number">32</div>
+                        <div class="stat-label">Citas Hoy</div>
+                        <div class="stat-icon">📅</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-number">15</div>
+                        <div class="stat-label">Especialistas</div>
+                        <div class="stat-icon">👨‍⚕️</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-number">89</div>
+                        <div class="stat-label">Tratamientos Pendientes</div>
+                        <div class="stat-icon">📋</div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <h3>Próximas Citas</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Paciente</th>
+                                <th>Especialista</th>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Ana García</td>
+                                <td>Dr. Martínez</td>
+                                <td>06/07/2025</td>
+                                <td>10:00 AM</td>
+                                <td><span class="status-badge status-active">Confirmada</span></td>
+                            </tr>
+                            <tr>
+                                <td>Carlos López</td>
+                                <td>Dra. Fernández</td>
+                                <td>06/07/2025</td>
+                                <td>11:30 AM</td>
+                                <td><span class="status-badge status-pending">Pendiente</span></td>
+                            </tr>
+                            <tr>
+                                <td>María Rodríguez</td>
+                                <td>Dr. Sánchez</td>
+                                <td>06/07/2025</td>
+                                <td>02:00 PM</td>
+                                <td><span class="status-badge status-completed">Completada</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Patients Section -->
+            <div id="patients" class="section hidden">
+                <div class="tabs">
+                    <div class="tab active" onclick="showTab('patient-list')">Lista de Pacientes</div>
+                    <div class="tab" onclick="showTab('new-patient')">Nuevo Paciente</div>
+                </div>
+
+                <div id="patient-list" class="tab-content active">
+                    <div class="table-container">
+                        <h3>Pacientes Registrados</h3>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Teléfono</th>
+                                    <th>Edad</th>
+                                    <th>Última Visita</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>001</td>
+                                    <td>Ana García Pérez</td>
+                                    <td>+51 987 654 321</td>
+                                    <td>34</td>
+                                    <td>15/06/2025</td>
+                                    <td>
+                                        <button class="btn btn-primary" onclick="editPatient(1)">Editar</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>002</td>
+                                    <td>Carlos López Ruiz</td>
+                                    <td>+51 987 654 322</td>
+                                    <td>28</td>
+                                    <td>20/06/2025</td>
+                                    <td>
+                                        <button class="btn btn-primary" onclick="editPatient(2)">Editar</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="new-patient" class="tab-content">
+                    <div class="form-section">
+                        <h3 class="form-title">Registro de Nuevo Paciente</h3>
+                        <form class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Nombres</label>
+                                <input type="text" class="form-input" placeholder="Nombres del paciente">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Apellidos</label>
+                                <input type="text" class="form-input" placeholder="Apellidos del paciente">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">DNI</label>
+                                <input type="text" class="form-input" placeholder="Número de DNI">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Teléfono</label>
+                                <input type="tel" class="form-input" placeholder="+51 987 654 321">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Fecha de Nacimiento</label>
+                                <input type="date" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Género</label>
+                                <select class="form-input">
+                                    <option>Masculino</option>
+                                    <option>Femenino</option>
+                                    <option>Otro</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Dirección</label>
+                                <input type="text" class="form-input" placeholder="Dirección completa">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Contacto de Emergencia</label>
+                                <input type="text" class="form-input" placeholder="Nombre y teléfono">
+                            </div>
+                        </form>
+                        <div style="margin-top: 25px;">
+                            <button class="btn btn-success">Registrar Paciente</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointments Section -->
+            <div id="appointments" class="section hidden">
+                <div class="tabs">
+                    <div class="tab active" onclick="showTab('appointment-list')">Lista de Citas</div>
+                    <div class="tab" onclick="showTab('new-appointment')">Nueva Cita</div>
+                </div>
+
+                <div id="appointment-list" class="tab-content active">
+                    <div class="table-container">
+                        <h3>Gestión de Citas</h3>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Paciente</th>
+                                    <th>Especialista</th>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>C001</td>
+                                    <td>Ana García</td>
+                                    <td>Dr. Martínez</td>
+                                    <td>06/07/2025</td>
+                                    <td>10:00 AM</td>
+                                    <td><span class="status-badge status-active">Confirmada</span></td>
+                                    <td>
+                                        <button class="btn btn-primary">Editar</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>C002</td>
+                                    <td>Carlos López</td>
+                                    <td>Dra. Fernández</td>
+                                    <td>06/07/2025</td>
+                                    <td>11:30 AM</td>
+                                    <td><span class="status-badge status-pending">Pendiente</span></td>
+                                    <td>
+                                        <button class="btn btn-primary">Editar</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="new-appointment" class="tab-content">
+                    <div class="form-section">
+                        <h3 class="form-title">Programar Nueva Cita</h3>
+                        <form class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Paciente</label>
+                                <select class="form-input">
+                                    <option>Seleccionar paciente</option>
+                                    <option>Ana García Pérez</option>
+                                    <option>Carlos López Ruiz</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Especialista</label>
+                                <select class="form-input">
+                                    <option>Seleccionar especialista</option>
+                                    <option>Dr. Martínez - Cardiología</option>
+                                    <option>Dra. Fernández - Pediatría</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Fecha</label>
+                                <input type="date" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Hora</label>
+                                <input type="time" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tipo de Consulta</label>
+                                <select class="form-input">
+                                    <option>Consulta General</option>
+                                    <option>Consulta Especializada</option>
+                                    <option>Control</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Motivo</label>
+                                <textarea class="form-input" rows="3" placeholder="Motivo de la consulta"></textarea>
+                            </div>
+                        </form>
+                        <div style="margin-top: 25px;">
+                            <button class="btn btn-success">Programar Cita</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Specialists Section -->
+            <div id="specialists" class="section hidden">
+                <div class="form-section">
+                    <h3 class="form-title">Gestión de Especialistas</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Especialista</th>
+                                    <th>Especialidad</th>
+                                    <th>Disponibilidad</th>
+                                    <th>Citas Hoy</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Dr. Martínez</td>
+                                    <td>Cardiología</td>
+                                    <td>8:00 AM - 6:00 PM</td>
+                                    <td>5</td>
+                                    <td><span class="status-badge status-active">Disponible</span></td>
+                                    <td>
+                                        <button class="btn btn-primary">Editar</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Dra. Fernández</td>
+                                    <td>Pediatría</td>
+                                    <td>9:00 AM - 5:00 PM</td>
+                                    <td>3</td>
+                                    <td><span class="status-badge status-active">Disponible</span></td>
+                                    <td>
+                                        <button class="btn btn-primary">Editar</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications Section -->
+            <div id="notifications" class="section hidden">
+                <div class="tabs">
+                    <div class="tab active" onclick="showTab('sms-notifications')">SMS Automáticos</div>
+                    <div class="tab" onclick="showTab('notification-history')">Historial</div>
+                </div>
+
+                <div id="sms-notifications" class="tab-content active">
+                    <div class="form-section">
+                        <h3 class="form-title">Sistema de Notificaciones SMS</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Recordatorio de Citas</label>
+                                <select class="form-input">
+                                    <option>Activado - 24 horas antes</option>
+                                    <option>Activado - 2 horas antes</option>
+                                    <option>Desactivado</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Confirmación de Citas</label>
+                                <select class="form-input">
+                                    <option>Activado</option>
+                                    <option>Desactivado</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Resultados de Análisis</label>
+                                <select class="form-input">
+                                    <option>Activado</option>
+                                    <option>Desactivado</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Plantilla de Recordatorio</label>
+                                <textarea class="form-input" rows="3" placeholder="Hola {nombre}, le recordamos su cita el {fecha} a las {hora} con {especialista}. Clínica MediFlow."></textarea>
+                            </div>
+                        </div>
+                        <div style="margin-top: 25px;">
+                            <button class="btn btn-success">Guardar Configuración</button>
+                            <button class="btn btn-primary" onclick="sendTestSMS()">Enviar SMS de Prueba</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="notification-history" class="tab-content">
+                    <div class="table-container">
+                        <h3>Historial de Notificaciones</h3>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Paciente</th>
+                                    <th>Teléfono</th>
+                                    <th>Tipo</th>
+                                    <th>Estado</th>
+                                    <th>Mensaje</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>06/07/2025 09:00</td>
+                                    <td>Ana García</td>
+                                    <td>+51 987 654 321</td>
+                                    <td>Recordatorio</td>
+                                    <td><span class="status-badge status-completed">Enviado</span></td>
+                                    <td>Recordatorio de cita mañana</td>
+                                </tr>
+                                <tr>
+                                    <td>05/07/2025 14:30</td>
+                                    <td>Carlos López</td>
+                                    <td>+51 987 654 322</td>
+                                    <td>Confirmación</td>
+                                    <td><span class="status-badge status-completed">Enviado</span></td>
+                                    <td>Cita confirmada</td>
+                                </tr>
+                                <tr>
+                                    <td>05/07/2025 10:15</td>
+                                    <td>María Rodríguez</td>
+                                    <td>+51 987 654 323</td>
+                                    <td>Resultado</td>
+                                    <td><span class="status-badge status-pending">Pendiente</span></td>
+                                    <td>Resultados disponibles</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Section -->
+            <div id="users" class="section hidden">
+                <div class="tabs">
+                    <div class="tab active" onclick="showTab('user-list')">Usuarios</div>
+                    <div class="tab" onclick="showTab('roles-permissions')">Roles y Permisos</div>
+                </div>
+
+                <div id="user-list" class="tab-content active">
+                    <div class="form-section">
+                        <h3 class="form-title">Gestión de Usuarios</h3>
+                        <div style="margin-bottom: 20px;">
+                            <button class="btn btn-success" onclick="addUser()">Agregar Usuario</button>
+                        </div>
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Usuario</th>
+                                        <th>Email</th>
+                                        <th>Rol</th>
+                                        <th>Estado</th>
+                                        <th>Último Acceso</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Dr. Rodríguez</td>
+                                        <td>dr.rodriguez@mediflow.com</td>
+                                        <td>Administrador</td>
+                                        <td><span class="status-badge status-active">Activo</span></td>
+                                        <td>06/07/2025 10:30</td>
+                                        <td>
+                                            <button class="btn btn-primary">Editar</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Enf. García</td>
+                                        <td>enfermera.garcia@mediflow.com</td>
+                                        <td>Enfermera</td>
+                                        <td><span class="status-badge status-active">Activo</span></td>
+                                        <td>06/07/2025 09:15</td>
+                                        <td>
+                                            <button class="btn btn-primary">Editar</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Recep. López</td>
+                                        <td>recepcion.lopez@mediflow.com</td>
+                                        <td>Recepcionista</td>
+                                        <td><span class="status-badge status-active">Activo</span></td>
+                                        <td>06/07/2025 08:00</td>
+                                        <td>
+                                            <button class="btn btn-primary">Editar</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="roles-permissions" class="tab-content">
+                    <div class="form-section">
+                        <h3 class="form-title">Control de Roles y Permisos</h3>
+                        <div class="dashboard-grid">
+                            <div class="card">
+                                <h4 style="margin-bottom: 15px; color: #2c3e50;">👨‍⚕️ Administrador</h4>
+                                <div style="font-size: 14px; line-height: 1.6;">
+                                    <p>✅ Acceso completo al sistema</p>
+                                    <p>✅ Gestión de usuarios</p>
+                                    <p>✅ Configuración de notificaciones</p>
+                                    <p>✅ Reportes y estadísticas</p>
+                                    <p>✅ Gestión de especialistas</p>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <h4 style="margin-bottom: 15px; color: #2c3e50;">👩‍⚕️ Especialista</h4>
+                                <div style="font-size: 14px; line-height: 1.6;">
+                                    <p>✅ Ver sus pacientes asignados</p>
+                                    <p>✅ Gestión de citas propias</p>
+                                    <p>✅ Historiales médicos</p>
+                                    <p>✅ Configurar disponibilidad</p>
+                                    <p>❌ Gestión de usuarios</p>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <h4 style="margin-bottom: 15px; color: #2c3e50;">👩‍⚕️ Enfermera</h4>
+                                <div style="font-size: 14px; line-height: 1.6;">
+                                    <p>✅ Registro de pacientes</p>
+                                    <p>✅ Actualizar historiales</p>
+                                    <p>✅ Programar citas</p>
+                                    <p>✅ Enviar notificaciones</p>
+                                    <p>❌ Configuraciones del sistema</p>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <h4 style="margin-bottom: 15px; color: #2c3e50;">👩‍💼 Recepcionista</h4>
+                                <div style="font-size: 14px; line-height: 1.6;">
+                                    <p>✅ Registro de pacientes</p>
+                                    <p>✅ Programar citas</p>
+                                    <p>✅ Confirmación de citas</p>
+                                    <p>❌ Historiales médicos</p>
+                                    <p>❌ Configuraciones</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Patient Registration -->
+    <div id="patientModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Editar Paciente</h2>
+            <form class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Nombres</label>
+                    <input type="text" class="form-input" id="editPatientName">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Apellidos</label>
+                    <input type="text" class="form-input" id="editPatientLastName">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Teléfono</label>
+                    <input type="tel" class="form-input" id="editPatientPhone">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="editPatientEmail">
+                </div>
+            </form>
+            <div style="margin-top: 25px;">
+                <button class="btn btn-success" onclick="savePatient()">Guardar Cambios</button>
+                <button class="btn btn-primary" onclick="closeModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Add User -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeUserModal()">&times;</span>
+            <h2>Agregar Nuevo Usuario</h2>
+            <form class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Nombre Completo</label>
+                    <input type="text" class="form-input" id="newUserName">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="newUserEmail">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Rol</label>
+                    <select class="form-input" id="newUserRole">
+                        <option>Administrador</option>
+                        <option>Especialista</option>
+                        <option>Enfermera</option>
+                        <option>Recepcionista</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contraseña Temporal</label>
+                    <input type="password" class="form-input" id="newUserPassword">
+                </div>
+            </form>
+            <div style="margin-top: 25px;">
+                <button class="btn btn-success" onclick="createUser()">Crear Usuario</button>
+                <button class="btn btn-primary" onclick="closeUserModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.section');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Hide all sections
+                    sections.forEach(section => section.classList.add('hidden'));
+                    
+                    // Show selected section
+                    const targetSection = this.dataset.section;
+                    document.getElementById(targetSection).classList.remove('hidden');
+                });
+            });
+        });
+
+        // Tab functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Modal functionality
+        function editPatient(patientId) {
+            document.getElementById('patientModal').style.display = 'block';
+            
+            // Simulate loading patient data
+            if (patientId === 1) {
+                document.getElementById('editPatientName').value = 'Ana';
+                document.getElementById('editPatientLastName').value = 'García Pérez';
+                document.getElementById('editPatientPhone').value = '+51 987 654 321';
+                document.getElementById('editPatientEmail').value = 'ana.garcia@email.com';
+            } else if (patientId === 2) {
+                document.getElementById('editPatientName').value = 'Carlos';
+                document.getElementById('editPatientLastName').value = 'López Ruiz';
+                document.getElementById('editPatientPhone').value = '+51 987 654 322';
+                document.getElementById('editPatientEmail').value = 'carlos.lopez@email.com';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('patientModal').style.display = 'none';
+        }
+
+        function savePatient() {
+            // Simulate saving patient data
+            alert('Paciente actualizado correctamente');
+            closeModal();
+        }
+
+        function addUser() {
+            document.getElementById('userModal').style.display = 'block';
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').style.display = 'none';
+        }
+
+        function createUser() {
+            const name = document.getElementById('newUserName').value;
+            const email = document.getElementById('newUserEmail').value;
+            const role = document.getElementById('newUserRole').value;
+            
+            if (name && email && role) {
+                alert(`Usuario ${name} creado correctamente con rol de ${role}`);
+                closeUserModal();
+                
+                // Clear form
+                document.getElementById('newUserName').value = '';
+                document.getElementById('newUserEmail').value = '';
+                document.getElementById('newUserPassword').value = '';
+            } else {
+                alert('Por favor, complete todos los campos');
+            }
+        }
+
+        function sendTestSMS() {
+            alert('SMS de prueba enviado correctamente a +51 987 654 321');
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const patientModal = document.getElementById('patientModal');
+            const userModal = document.getElementById('userModal');
+            
+            if (event.target === patientModal) {
+                patientModal.style.display = 'none';
+            }
+            if (event.target === userModal) {
+                userModal.style.display = 'none';
+            }
+        }
+
+        // Simulated real-time updates
+        setInterval(function() {
+            // Update notification badge randomly
+            const badge = document.querySelector('.notification-badge');
+            const currentCount = parseInt(badge.textContent);
+            const newCount = Math.max(0, currentCount + Math.floor(Math.random() * 3) - 1);
+            badge.textContent = newCount;
+        }, 30000); // Update every 30 seconds
+
+        // Form validation
+        document.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            const inputs = form.querySelectorAll('.form-input');
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                if (input.hasAttribute('required') && !input.value.trim()) {
+                    input.style.borderColor = '#ff4757';
+                    isValid = false;
+                } else {
+                    input.style.borderColor = '#e0e0e0';
+                }
+            });
+            
+            if (isValid) {
+                alert('Formulario enviado correctamente');
+            } else {
+                alert('Por favor, complete todos los campos requeridos');
+            }
+        });
+
+        // Search functionality (placeholder)
+        function searchPatients() {
+            console.log('Searching patients...');
+        }
+
+        // Export functionality (placeholder)
+        function exportData() {
+            console.log('Exporting data...');
+        }
+
+        // Print functionality (placeholder)
+        function printReport() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
